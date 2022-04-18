@@ -1,5 +1,5 @@
 # Woffu hours
-Fill hours automatic
+Fill hours in Woffu automatically
 
 ## ⚙️ Pre requirements
 
