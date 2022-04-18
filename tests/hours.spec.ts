@@ -29,6 +29,16 @@ const buildSetup = (page: Page) => ({
     goToReport: async () => {
         await page.goto('https://the_agile_monkeys.woffu.com/v2/personal/diary/user');
     },
+    getDayToFill: async () => await page
+        .frameLocator('#iFrameResizer0')
+        .locator('.ng-binding.ng-scope.text-danger')
+        .first(),
+    getModifyButton: async (): Promise<Locator | undefined> => {
+        const modifyButton = await page.frameLocator('#iFrameResizer0').locator('text=Modificar');
+        if (await exists(modifyButton)) {
+            return modifyButton
+        }
+    },
     fillHours: async modifyButton => {
         await modifyButton.click();
 
@@ -39,36 +49,36 @@ const buildSetup = (page: Page) => ({
         await page.frameLocator('#iFrameResizer0').locator('[placeholder="\\31 7\\:30\\:00"]').fill('17:30');
 
         await page.frameLocator('#iFrameResizer0').locator('form[name="diaryEditForm"] >> text=Aceptar').click();
+    },
+    close: async () => {
+        await page.frameLocator('#iFrameResizer0').locator('#diary-edit >> text=×').click();
+        await page.close();
     }
 });
 
-test('test', async ({ page }) => {
-    const { doLogin, goToReport, fillHours } = buildSetup(page);
+test('fill hours in Woffu', async ({ page }) => {
+    const { doLogin, goToReport, getDayToFill, getModifyButton, fillHours, close } = buildSetup(page);
     await doLogin();
 
     await page.locator('button:has-text("Dismiss modal")').click();
 
     await goToReport();
 
-    let element;
+    let dayToFill;
     do {
-        element = await page
-            .frameLocator('#iFrameResizer0')
-            .locator('.ng-binding.ng-scope.text-danger')
-            .first();
-        if (element) {
-            element.click();
+        dayToFill = await getDayToFill();
+        if (dayToFill) {
+            dayToFill.click();
 
-            const modifyButton = await page.frameLocator('#iFrameResizer0').locator('text=Modificar');
-
+            const modifyButton = await getModifyButton();
+            await page.pause();
             if (!await exists(modifyButton)) {
-                await page.frameLocator('#iFrameResizer0').locator('#diary-edit >> text=×').click();
-                await page.close();
+                await close();
                 return;
             }
 
             await fillHours(modifyButton);
         }
-    } while (element)
+    } while (dayToFill)
 
 });
