@@ -30,7 +30,9 @@ Execute the following command to install it:
 npm run i
 ```
 
-## 🚀 Fill hours with user and password
+## 🚀 Fill hours 
+
+### with user and password
 
 If you want to fill your hours in Woffu execute the following command:
 
@@ -43,7 +45,7 @@ To show the browser:
 make fill-hours-headed
 ```
 
-## 🚀 Fill hours with Google authentication
+### with Google authentication
 
 If you want to fill your hours in Woffu execute the following command:
 
