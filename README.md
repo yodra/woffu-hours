@@ -3,21 +3,24 @@ Fill hours in Woffu automatically
 
 ## ⚙️ Pre requirements
 
-You need to install `npm` and `node`.
+You need to install [brew](https://brew.sh/), `npm` and `node`.
 
 ````shell
-brew install npm
-
 brew install node
 ````
 
-And create a new file `.env`.
+And create a new file called `.env` with your email and password within the file.
+
+```
+EMAIL=youremail@yourcompany.com
+PASSWORD=yourpassword
+```
+
+You can copy the sample file:
 
 ```shell
 cp .env.sample .env
 ```
-
-Modify your email and password in the file.
 
 ## 👷‍♀️ Install
 
@@ -27,7 +30,7 @@ Execute the following command to install it:
 npm run i
 ```
 
-## 🚀 Fill hours
+## 🚀 Fill hours with user and password
 
 If you want to fill your hours in Woffu execute the following command:
 
@@ -38,4 +41,17 @@ make fill-hours
 To show the browser: 
 ```shell
 make fill-hours-headed
+```
+
+## 🚀 Fill hours with Google authentication
+
+If you want to fill your hours in Woffu execute the following command:
+
+```shell
+make fill-google
+```
+
+To show the browser:
+```shell
+make fill-google-headed
 ```

@@ -4,30 +4,24 @@ import { exists, woffuActions, woffuURL } from "./utils";
 
 config();
 
-const emailInput = '[placeholder="Tu e-mail"]';
-const passwordInput = '[placeholder="Contraseña"]';
-const enterButton = 'form[name="loginForm"] button:has-text("Entrar")';
-
 const buildSetup = (page: Page) => ({
     doLogin: async () => {
         await page.goto(woffuURL);
-
-        await page.locator(emailInput).click();
-        await page.locator(emailInput).fill(process.env.EMAIL);
-
-        await page.locator(passwordInput).click();
-        await page.locator(passwordInput).fill(process.env.PASSWORD);
-
         await Promise.all([
             page.waitForNavigation(),
-            page.locator(enterButton).click()
+            page.locator('text=Entrar con Google').click()
         ]);
+
+        await page.locator('[aria-label="Correo electrónico o teléfono"]').fill(process.env.EMAIL);
+        await page.locator('button:has-text("Siguiente")').click();
+
+        await page.locator('[aria-label="Introduce tu contraseña"]').fill(process.env.PASSWORD);
+        await page.locator('button:has-text("Siguiente")').click();
     },
     ...woffuActions(page)
 });
 
-
-test('fill hours in Woffu with Google authentication', async ({ page }) => {
+test('fill hours in Woffu', async ({ page }) => {
     const {
         doLogin,
         dismissModal,

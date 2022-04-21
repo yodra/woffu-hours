@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "playwright test",
-    "start:headed": "playwright test --headed"
+    "start": "playwright test hours.spec.ts",
+    "start:headed": "playwright test hours.spec.ts --headed",
+    "start:google": "playwright test fillHoursGoogle.spec.ts",
+    "start:google:headed": "playwright test fillHoursGoogle.spec.ts --headed"
   },
   "keywords": [],
   "author": "",
