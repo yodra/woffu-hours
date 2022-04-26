@@ -10,7 +10,7 @@ export const exists = async (locator: Locator): Promise<boolean> => {
     }
 };
 
-export const woffuActions = (page: Page) => ({
+const woffuActions = (page: Page) => ({
     goToReport: async () => {
         await page.goto('https://the_agile_monkeys.woffu.com/v2/personal/diary/user');
     },
@@ -44,7 +44,9 @@ export const woffuActions = (page: Page) => ({
             .locator('text=Fichajes futuros no permitidos')
             .first();
 
-        console.info('⚠️ Future work log not allowed!')
+        if (hasError) {
+            console.info('⚠️ Future work log not allowed!')
+        }
         return hasError;
     },
     close: async () => {
@@ -52,3 +54,36 @@ export const woffuActions = (page: Page) => ({
         await page.close();
     }
 });
+
+export const fillHours = async (page: Page) => {
+    const {
+        dismissModal,
+        goToReport,
+        getDayToFill,
+        getModifyButton,
+        fillHours,
+        hasErrorFillingFutureDays,
+        close
+    } = woffuActions(page);
+
+    await dismissModal();
+    await goToReport();
+
+    let dayToFill;
+    let canFillCurrentDay = true;
+    do {
+        dayToFill = await getDayToFill();
+        if (dayToFill) {
+            dayToFill.click();
+
+            const modifyButton = await getModifyButton();
+            if (!await exists(modifyButton)) {
+                await close();
+                return;
+            }
+
+            await fillHours(modifyButton);
+            canFillCurrentDay = !await hasErrorFillingFutureDays();
+        }
+    } while (dayToFill && canFillCurrentDay);
+};
