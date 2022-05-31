@@ -10,64 +10,66 @@ export const exists = async (locator: Locator): Promise<boolean> => {
     }
 };
 
-const woffuActions = (page: Page) => ({
-    goToReport: async () => {
-        await page.goto('https://the_agile_monkeys.woffu.com/v2/personal/diary/user');
-    },
-    dismissModal: async () => {
-        await page.locator('button:has-text("Dismiss modal")').click();
-    },
-    getDayToFill: async () => await page
-        .frameLocator('#iFrameResizer0')
-        .locator('.ng-binding.ng-scope.text-danger')
-        .first(),
-    getModifyButton: async (): Promise<Locator | undefined> => {
-        const modifyButton = await page.frameLocator('#iFrameResizer0').locator('text=Modificar');
-        if (await exists(modifyButton)) {
-            return modifyButton;
+const woffuActions = (page: Page) => {
+    const frameLocator = page.frameLocator('#woffu-legacy-app');
+    return ({
+        goToReport: async () => {
+            await page.goto('https://the_agile_monkeys.woffu.com/v2/personal/diary/user');
+        },
+        dismissModal: async () => {
+            await page.locator('button:has-text("Dismiss modal")').click();
+        },
+        getDayToFill: async () => await frameLocator.locator('.ng-binding.ng-scope.text-danger').first(),
+        getModifyButton: async (): Promise<Locator | undefined> => {
+            const modifyButton = await frameLocator.locator('text=Modificar');
+            if (await exists(modifyButton)) {
+                return modifyButton;
+            }
+        },
+        fillHours: async modifyButton => {
+            await modifyButton.click();
+
+            await frameLocator.locator('[placeholder="\\30 9\\:30\\:00"]').click();
+            await frameLocator.locator('[placeholder="\\30 9\\:30\\:00"]').fill('09:30');
+
+            await frameLocator.locator('[placeholder="\\31 7\\:30\\:00"]').click();
+            await frameLocator.locator('[placeholder="\\31 7\\:30\\:00"]').fill('17:30');
+
+            await frameLocator.locator('form[name="diaryEditForm"] >> text=Aceptar').click();
+        },
+        hasErrorFillingFutureDays: async () => {
+            const warningMessage = await frameLocator.locator('text=Fichajes futuros no permitidos');
+            const exist = await exists(warningMessage);
+
+            console.log({ warningMessage, exist });
+            return exist;
+        },
+        close: async () => {
+            await frameLocator.locator('#diary-edit >> text=×').click();
+            await page.close();
         }
-    },
-    fillHours: async modifyButton => {
-        await modifyButton.click();
+    });
+};
 
-        await page.frameLocator('#iFrameResizer0').locator('[placeholder="\\30 9\\:30\\:00"]').click();
-        await page.frameLocator('#iFrameResizer0').locator('[placeholder="\\30 9\\:30\\:00"]').fill('09:30');
+export const dismissModal = async (page: Page) => {
+    await page.locator('button:has-text("Dismiss modal")').click();
+};
 
-        await page.frameLocator('#iFrameResizer0').locator('[placeholder="\\31 7\\:30\\:00"]').click();
-        await page.frameLocator('#iFrameResizer0').locator('[placeholder="\\31 7\\:30\\:00"]').fill('17:30');
-
-        await page.frameLocator('#iFrameResizer0').locator('form[name="diaryEditForm"] >> text=Aceptar').click();
-    },
-    hasErrorFillingFutureDays: async () => {
-        const hasError = !!await page
-            .frameLocator('#iFrameResizer0')
-            .locator('text=Fichajes futuros no permitidos')
-            .first();
-
-        if (hasError) {
-            console.info('⚠️ Future work log not allowed!')
-        }
-        return hasError;
-    },
-    close: async () => {
-        await page.frameLocator('#iFrameResizer0').locator('#diary-edit >> text=×').click();
-        await page.close();
-    }
-});
+export const goToReport = async (page: Page) => {
+    const {
+        goToReport
+    } = woffuActions(page);
+    await goToReport();
+};
 
 export const fillHours = async (page: Page) => {
     const {
-        dismissModal,
-        goToReport,
         getDayToFill,
         getModifyButton,
         fillHours,
         hasErrorFillingFutureDays,
         close
     } = woffuActions(page);
-
-    await dismissModal();
-    await goToReport();
 
     let dayToFill;
     let canFillCurrentDay = true;
@@ -85,5 +87,6 @@ export const fillHours = async (page: Page) => {
             await fillHours(modifyButton);
             canFillCurrentDay = !await hasErrorFillingFutureDays();
         }
+        console.log("while: ", !!dayToFill, "&&", canFillCurrentDay);
     } while (dayToFill && canFillCurrentDay);
 };

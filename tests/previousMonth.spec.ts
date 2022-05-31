@@ -1,6 +1,6 @@
+import { config } from "dotenv";
 import { Page, test } from '@playwright/test';
-import { config } from 'dotenv';
-import { dismissModal, fillHours, goToReport, woffuURL } from "./utils";
+import { fillHours, goToReport, woffuURL } from "./utils";
 
 config();
 
@@ -25,9 +25,10 @@ const buildSetup = (page: Page) => ({
     }
 });
 
-test('fill hours in Woffu', async ({ page }) => {
+test('fill hours of previous month in Woffu', async ({ page }) => {
     const { doLogin } = buildSetup(page);
     await doLogin();
     await goToReport(page);
+    await page.frameLocator('#iFrameResizer0').locator('text=< mes anterior').click();
     await fillHours(page);
 });

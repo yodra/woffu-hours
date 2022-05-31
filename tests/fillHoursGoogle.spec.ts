@@ -1,8 +1,5 @@
 import { Page, test } from '@playwright/test';
-import { config } from 'dotenv';
-import { fillHours, woffuURL } from "./utils";
-
-config();
+import { fillHours, goToReport, woffuURL } from "./utils";
 
 const buildSetup = (page: Page) => ({
     doLoginWithGoogle: async () => {
@@ -23,5 +20,6 @@ const buildSetup = (page: Page) => ({
 test('fill hours in Woffu with Google authentication', async ({ page }) => {
     const { doLoginWithGoogle } = buildSetup(page);
     await doLoginWithGoogle();
+    await goToReport(page);
     await fillHours(page);
 });
