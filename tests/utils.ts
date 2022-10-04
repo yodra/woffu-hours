@@ -1,6 +1,7 @@
 import { Locator, Page } from "@playwright/test";
 
-export const woffuURL = 'https://the_agile_monkeys.woffu.com/#/login';
+// export const woffuURL = 'https://the_agile_monkeys.woffu.com/#/login';
+export const woffuURL = 'https://the_agile_monkeys.woffu.com/V2/login';
 
 export const exists = async (locator: Locator): Promise<boolean> => {
     try {
@@ -26,6 +27,7 @@ const woffuActions = (page: Page) => {
                 return modifyButton;
             }
         },
+        countTotalDaysToFill: async page => await page.frameLocator('#woffu-legacy-app').locator('text=-8h').count(),
         fillHours: async modifyButton => {
             await modifyButton.click();
 
@@ -38,11 +40,8 @@ const woffuActions = (page: Page) => {
             await frameLocator.locator('form[name="diaryEditForm"] >> text=Aceptar').click();
         },
         hasErrorFillingFutureDays: async () => {
-            const warningMessage = await frameLocator.locator('text=Fichajes futuros no permitidos');
-            const exist = await exists(warningMessage);
-
-            console.log({ warningMessage, exist });
-            return exist;
+            const totalWarnings = await frameLocator.locator('text=Fichajes futuros no permitidos').count();
+            return totalWarnings > 1;
         },
         close: async () => {
             await frameLocator.locator('#diary-edit >> text=×').click();
@@ -66,27 +65,27 @@ export const fillHours = async (page: Page) => {
     const {
         getDayToFill,
         getModifyButton,
+        countTotalDaysToFill,
         fillHours,
         hasErrorFillingFutureDays,
-        close
     } = woffuActions(page);
 
-    let dayToFill;
     let canFillCurrentDay = true;
-    do {
-        dayToFill = await getDayToFill();
+    // TODO Getting error without pause because it doesn't find -8h text
+    // await page.pause();
+    let totalDaysToFill = await countTotalDaysToFill(page);
+    while (totalDaysToFill > 1 && canFillCurrentDay) {
+        const dayToFill = await getDayToFill();
         if (dayToFill) {
             dayToFill.click();
 
             const modifyButton = await getModifyButton();
-            if (!await exists(modifyButton)) {
-                await close();
-                return;
-            }
-
             await fillHours(modifyButton);
-            canFillCurrentDay = !await hasErrorFillingFutureDays();
+            canFillCurrentDay = await hasErrorFillingFutureDays();
         }
-        console.log("while: ", !!dayToFill, "&&", canFillCurrentDay);
-    } while (dayToFill && canFillCurrentDay);
+
+        totalDaysToFill = await countTotalDaysToFill(page);
+        console.log('are there days to fill?: ', totalDaysToFill > 1, { totalDaysToFill });
+        console.log('could it fill the current day?: ', canFillCurrentDay);
+    }
 };

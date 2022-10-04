@@ -4,23 +4,16 @@ import { fillHours, goToReport, woffuURL } from "./utils";
 
 config();
 
-const emailInput = '[placeholder="Tu e-mail"]';
-const passwordInput = '[placeholder="Contraseña"]';
-const enterButton = 'form[name="loginForm"] button:has-text("Entrar")';
-
 const buildSetup = (page: Page) => ({
     doLogin: async () => {
         await page.goto(woffuURL);
-
-        await page.locator(emailInput).click();
-        await page.locator(emailInput).fill(process.env.EMAIL);
-
-        await page.locator(passwordInput).click();
-        await page.locator(passwordInput).fill(process.env.PASSWORD);
+        await page.locator('[placeholder="Introduce tu email"]').fill(process.env.EMAIL);
+        await page.locator('text=Siguiente').click();
+        await page.locator('[placeholder="Escribe tu contraseña"]').fill(process.env.PASSWORD);
 
         await Promise.all([
             page.waitForNavigation(),
-            page.locator(enterButton).click()
+            page.locator('button:has-text("Iniciar sesión")').click()
         ]);
     }
 });
@@ -29,6 +22,11 @@ test('fill hours of previous month in Woffu', async ({ page }) => {
     const { doLogin } = buildSetup(page);
     await doLogin();
     await goToReport(page);
-    await page.frameLocator('#iFrameResizer0').locator('text=< mes anterior').click();
+    // TODO repeat number of month back
+    // await page.frameLocator('#woffu-legacy-app').locator('text=< mes anterior').click();
+
+    // TODO repeat number of month to fill
+    // await fillHours(page);
+    // await page.frameLocator('#woffu-legacy-app').locator('text=mes siguiente >').click();
     await fillHours(page);
 });
