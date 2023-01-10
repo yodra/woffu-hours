@@ -4,20 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "playwright test hours.spec.ts",
-    "start:headed": "playwright test hours.spec.ts --headed",
-    "start:google": "playwright test fillHoursGoogle.spec.ts",
-    "start:google:headed": "playwright test fillHoursGoogle.spec.ts --headed",
-    "previous-month": "playwright test previousMonth.spec.ts",
-    "previous-month:headed": "playwright test previousMonth.spec.ts --headed"
+    "start": "npx playwright test fillHours.spec.ts",
+    "start:headed": "npx playwright test fillHours.spec.ts --headed"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@playwright/test": "^1.21.0"
+    "@playwright/test": "1.27.0"
   },
   "dependencies": {
-    "dotenv": "^16.0.0"
+    "dotenv": "16.0.0"
+  },
+  "engineStrict": true,
+  "engines": {
+    "node": "=16.15.0",
+    "npm": "=8.16.0"
   }
 }
