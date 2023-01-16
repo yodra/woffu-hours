@@ -4,6 +4,12 @@ Fill hours in Woffu automatically
 
 ## ⚙️ Pre requirements
 
+### Download
+
+Download this project and unzip it.
+
+![download_zip.png](download_zip.png)
+
 ### Installation
 
 You need to install:
