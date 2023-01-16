@@ -54,13 +54,13 @@ npm run i
 
 ### with user and password
 
-If you want to fill your hours in Woffu execute the following command:
+To fill your hours in Woffu execute the following command:
 
 ```shell
 make fill-hours
 ```
 
-To show the browser: 
+To fill your hours and show the process execute: 
 
 ```shell
 make fill-hours-headed
