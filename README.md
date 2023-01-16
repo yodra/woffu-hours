@@ -23,6 +23,10 @@ You need to install:
 make install-pre
 ````
 
+📝 **Note:** To execute the commands you need to open the terminal application:
+
+![terminal.png](terminal.png)
+
 ### Configuration 
 
 Duplicate the `.env.sample` file and change the name to `.env`.
