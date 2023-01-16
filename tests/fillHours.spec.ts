@@ -54,7 +54,7 @@ test('fill hours of previous month in Woffu', async ({ page }) => {
     }
     await goToReport(page);
 
-    for (let index = 1; index <= parseInt(process.env.TOTAL_MONTH); index++) {
+    for (let index = 1; index < parseInt(process.env.TOTAL_MONTH); index++) {
         await page.frameLocator('#woffu-legacy-app').locator('text=< mes anterior').click();
     }
 
