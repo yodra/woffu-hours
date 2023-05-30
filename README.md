@@ -20,7 +20,7 @@ You need to install:
 👀 Execute the following command to install the pre requirements:
 
 ````shell
-make install-pre
+make install
 ````
 
 📝 **Note:** To execute the commands you need to open the terminal application:
