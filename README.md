@@ -38,6 +38,7 @@ Check the file and make sure to update the values with your personal information
 - TOTAL_MONTH: number of total month you need to fill
 - INI_HOUR: The hour you want fill as **the initial hour in your day**
 - END_HOUR: The hour you want fill as **the end hour in your day**
+- WOFFU_URL: The url you use to login in Woffu
 
 🙋‍♀ **️Remember**: The total hours between the initial and end hour can't be greater than 8h
 
@@ -48,8 +49,9 @@ EMAIL=youremail@yourcompany.com
 PASSWORD=yourpassword
 HAS_GOOGLE_LOGIN=true
 TOTAL_MONTH=3
-INI_HOUR=9:30
+INI_HOUR=09:30
 END_HOUR=17:30
+WOFFU_URL=https://your_company.woffu.com
 ```
 
 ## 👷‍♀️ Install

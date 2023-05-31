@@ -15,7 +15,7 @@ const passwordTextBox = { name: 'Introduce tu contraseña' };
 
 const buildSetup = (page: Page) => ({
     doLogin: async () => {
-        await page.goto(woffuURL);
+        await page.goto(`${woffuURL}/V2/login`);
         await page.getByPlaceholder(emailInput).click();
         await page.getByPlaceholder(emailInput).fill(process.env.EMAIL);
         await page.getByRole('button', nextButton).click();
@@ -28,7 +28,7 @@ const buildSetup = (page: Page) => ({
         ]);
     },
     doLoginWithGoogle: async () => {
-        await page.goto(woffuURL);
+        await page.goto(`${woffuURL}/V2/login`);
         await Promise.all([
             page.waitForNavigation(),
             page.getByRole('link', linkGoogle).click()

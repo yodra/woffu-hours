@@ -1,6 +1,6 @@
 import {Locator, Page} from "@playwright/test";
 
-export const woffuURL = `${process.env.WOFFU_URL}/V2/login`;
+export const woffuURL = process.env.WOFFU_URL;
 
 export const exists = async (locator: Locator): Promise<boolean> => {
     try {
@@ -13,12 +13,9 @@ export const exists = async (locator: Locator): Promise<boolean> => {
 const woffuActions = (page: Page) => {
     const frameLocator = page.frameLocator('#woffu-legacy-app');
     return ({
-        goToReport: async () => await page.goto(`${process.env.WOFFU_URL}/v2/personal/diary/user`),
+        goToReport: async () => await page.goto(`${woffuURL}/v2/personal/diary/user`),
         getDayToFill: async () => await frameLocator.locator('.ng-binding.ng-scope.text-danger').first(),
-        countTotalDaysToFill: async page => {
-            await page.waitForTimeout(5000);
-            return await frameLocator.getByText('-8h').count()
-        },
+        countTotalDaysToFill: async () => await frameLocator.getByText('-8h').count(),
         getModifyButton: async (): Promise<Locator | undefined> => {
             const modifyButton = await frameLocator.getByText('Modificar');
             if (await exists(modifyButton)) {
@@ -66,7 +63,7 @@ export const fillHours = async (page: Page) => {
     } = woffuActions(page);
 
     let canFillCurrentDay = true;
-    let totalDaysToFill = await countTotalDaysToFill(page);
+    let totalDaysToFill = await countTotalDaysToFill();
     while (totalDaysToFill > 1 && canFillCurrentDay) {
         const dayToFill = await getDayToFill();
         if (dayToFill) {
@@ -77,6 +74,6 @@ export const fillHours = async (page: Page) => {
             canFillCurrentDay = await hasErrorFillingFutureDays();
         }
 
-        totalDaysToFill = await countTotalDaysToFill(page);
+        totalDaysToFill = await countTotalDaysToFill();
     }
 };
