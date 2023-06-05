@@ -1,4 +1,4 @@
-import {Locator, Page} from "@playwright/test";
+import {expect, Locator, Page} from "@playwright/test";
 
 export const woffuURL = process.env.WOFFU_URL;
 
@@ -37,6 +37,9 @@ const woffuActions = (page: Page) => {
             const totalWarnings = await frameLocator.getByText('Fichajes futuros no permitidos').count();
             return totalWarnings > 1;
         },
+        getText: async (text: string): Promise<Locator> => {
+            return frameLocator.getByText(text);
+        },
         close: async () => {
             await frameLocator.locator('#diary-edit >> text=×').click();
             await page.close();
@@ -59,7 +62,7 @@ export const fillHours = async (page: Page) => {
         getModifyButton,
         countTotalDaysToFill,
         fillHours,
-        hasErrorFillingFutureDays,
+        getText
     } = woffuActions(page);
 
     let canFillCurrentDay = true;
@@ -71,9 +74,13 @@ export const fillHours = async (page: Page) => {
 
             const modifyButton = await getModifyButton();
             await fillHours(modifyButton);
-            canFillCurrentDay = await hasErrorFillingFutureDays();
+            console.info('   👍 Hours filled');
+            // canFillCurrentDay = await hasErrorFillingFutureDays();
         }
 
         totalDaysToFill = await countTotalDaysToFill();
+        await expect(await getText('Solicitud procesada correctamente')).toBeVisible();
+        console.info(`   Pending to fill: ${totalDaysToFill} days`);
     }
+    console.log('✅ All days for the month filled!');
 };
